@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Vamshika Sutar — Portfolio</title>
+<style>
+  :root{
+    --bg:#f9f9f9; --card:#fff; --muted:#6b7280; --accent:#0077cc; --dark:#111827;
+  }
+  html,body{height:100%;margin:0;font-family:"Segoe UI", Tahoma, sans-serif;background:var(--bg);color:#0f172a}
+  header{background:var(--dark);color:#fff;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .profile{display:flex;gap:12px;align-items:center}
+  header img{width:84px;height:84px;border-radius:50%;object-fit:cover;background:#e5e7eb}
+  header h1{margin:0;font-size:20px}
+  header p{margin:2px 0 0 0;color:#d1d5db;font-size:13px}
+  header a.cv{background:var(--accent);color:#fff;padding:8px 12px;border-radius:6px;text-decoration:none}
+  .page{max-width:1100px;margin:0 auto;padding:26px 18px}
+  .container{display:flex;flex-wrap:wrap;gap:18px;justify-content:center}
+  .card{width:260px;background:var(--card);border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.06);cursor:pointer;overflow:hidden;display:flex;flex-direction:column;transition:transform .14s, box-shadow .14s}
+  .card:hover{transform:translateY(-6px);box-shadow:0 14px 34px rgba(2,6,23,0.08)}
+  /* show full image inside thumbnail (no cropping) */
+  .card img{
+    width:100%;
+    height:150px;
+    object-fit:contain;       /* preserve whole image */
+    display:block;
+    background:#fff;
+    padding:8px;              /* small padding to avoid touching edges */
+    box-sizing:border-box;
+  }
+  .card h3{padding:12px;margin:0;font-size:15px;line-height:1.2}
+  .paper-link{display:inline-block;margin:8px auto 16px auto;padding:6px 10px;border-radius:6px;background:#0f172a;color:#fff;text-decoration:none;font-size:13px}
+  .section{display:none}
+  .section.active{display:block}
+  .back-button{display:inline-flex;align-items:center;padding:8px 12px;background:var(--dark);color:#fff;border-radius:8px;text-decoration:none;cursor:pointer;margin-bottom:12px}
+  h2{text-align:center;margin:6px 0 14px 0;font-size:22px}
+  .meta{text-align:center;color:var(--muted);margin-bottom:12px}
+  .detail-box{max-width:780px;margin:0 auto;background:var(--card);border-radius:10px;padding:16px;box-shadow:0 8px 28px rgba(2,6,23,0.06)}
+  /* popup */
+  .popup-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.36);display:none;align-items:center;justify-content:center;z-index:1200}
+  .popup{width:min(560px,94%);background:#fff;border-radius:10px;padding:18px;box-shadow:0 20px 60px rgba(2,6,23,0.35);font-size:14px;line-height:1.4}
+  .popup .heading-big{font-size:32px;font-weight:700;margin:0 0 10px 0}
+  .popup-row{display:flex;gap:14px;align-items:flex-start}
+  .popup-bar{width:6px;background:#1f2937;border-radius:2px;min-height:120px;flex:0 0 6px; margin-top:6px}
+  .popup-lines{flex:1}
+  .popup-lines li{margin:8px 0}
+  .popup-lines li:first-child{font-style:italic;text-decoration:underline}
+  .popup .muted{color:var(--muted);font-size:13px;margin-bottom:8px}
+  .popup .popup-actions{display:flex;justify-content:flex-end;margin-top:12px;gap:8px}
+  .btn{padding:8px 10px;border-radius:8px;border:0;cursor:pointer;font-size:14px}
+  .btn.ghost{background:#eef2ff;color:#0f172a}
+  .popup a.paper-link{display:inline-block;margin:8px 0 0 0}
+  @media (max-width:640px){
+    .card{width:100%;max-width:420px}
+    header{flex-direction:column;align-items:flex-start}
+    .popup{width:96%}
+    .popup .heading-big{font-size:24px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="profile">
+    <img src="Photo_Vamshika.jpg" alt="Vamshika Sutar">
+    <div>
+      <h1>Hi, I'm Vamshika Sutar</h1>
+      <p>
+        AI Research Enthusiast<br>
+        Bachelors in Civil Engineering & Minor in Computer Science & Engineering
+      </p>
+      <p>
+        Research Interests: Computer Vision, Deep Learning, Intelligent Mobility
+      </p>
+      <p style="margin-top:6px;font-size:13px;color:#d1d5db;">
+        <a href="mailto:vamshikasutar.iitb@gmail.com" style="color:#d1d5db;text-decoration:none;">Contact: vamshikasutar.iitb@gmail.com</a>
+      </p>
+    </div>
+  </div>
+ 
+</header>
+
+<script>
+/* helpers */
+function escapeHtml(s){ return String(s || '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;'); }
+
+/* DATA - updated to use the image filenames you provided */
+const DATA = {
+  research: {
+    research1: {
+      title: "Vision-based Learning Systems for Semi-Automated Forklifts",
+      popupHeading: "Vision-based Learning Systems for Semi-Automated Forklifts",
+      image: "FedExIITB.png",
+      popupLines: [
+        "Bachelors Thesis Project",
+        "Guide: Prof. Archak Mittal",
+        "In collaboration with FedEx India"
+      ]
+    },
+    research2: {
+      title: "Intelligent Roadway Perception for Autonomous Driving Systems",
+      popupHeading: "Intelligent Roadway Perception for Autonomous Driving Systems",
+      image: "AD.png",
+      popupLines: [
+        "Research Intern",
+        "Guide: Prof. Karim El-Basyouny",
+        "Transportation Engineering Lab",
+        "University of Alberta"
+      ]
+    },
+    /* YOU REQUESTED THESE EXACT IMAGE NAMES — placed under images/ with spaces preserved */
+    research3: {
+      title: "Spatiotemporal deep learning models for forecasting rapid intensifying cyclones",
+      popupHeading: "Spatiotemporal deep learning models for forecasting rapidly intensifying cyclones",
+      image: "Screenshot 2025-10-11 003517.png",
+      popupLines: [
+        "Research Intern",
+        "Guide: Prof. Rohitash Chandra",
+        "Transitional AI Research Group",
+        "University of New South Wales"
+      ]
+    },
+    research4: {
+      title: "Delhi Air Quality Prediction",
+      popupHeading: "Delhi Air Quality Prediction",
+      image: "Screenshot 2025-10-11 004010.png",
+      popupLines: [
+        "Research Intern",
+        "Guide: Prof. Rohitash Chandra",
+        "Transitional AI Research Group",
+        "University of New South Wales"
+      ]
+    },
+    research5: {
+      title: "Speech Signal Analysis for Parkinson’s Disease detection",
+      popupHeading: "Speech Signal Analysis for Parkinson’s Disease detection",
+      image: "PD.png",
+      popupLines: [
+        "Research and Development Project",
+        "Guide: Prof. Nirmal Punjabi",
+        "Koita Centre for Digital Health",
+        "IIT Bombay"
+      ]
+    },
+    research6: {
+      title: "Oral Potential Malignant Detection",
+      popupHeading: "Oral Potential Malignant Detection",
+      image: "Screenshot 2025-10-11 005059.png",
+      popupLines: [
+        "Research and Development Project",
+        "Guide: Prof. Nirmal Punjabi",
+        "Koita Centre for Digital Health",
+        "IIT Bombay"
+      ]
+    },
+    research7: {
+      title: "Concrete Surface Image Analysis",
+      popupHeading: "Concrete Surface Image Analysis",
+      image: "Screenshot 2025-10-11 004832.png",
+      popupLines: [
+        "Research and Development Project",
+        "Guides: Prof. Abir De, Prof. Alankar",
+        "ICME and Materials Genome Lab",
+        "IIT Bombay"
+      ]
+    }
+  },
+
+  projects: {
+    project1: {
+      title: "AI for Customer Review Classification",
+      popupHeading: "AI for Customer Review Classification",
+      image: "Screenshot 2025-11-08 001121.png",
+      popupLines: [
+        "Course Project : CS 419 - Introduction to Machine Learning",
+        "Guide: Prof. Abir De"
+      ]
+    },
+    project2: {
+      title: "Optimizing Stock Trading with Reinforcement Learning",
+      popupHeading: "Optimizing Stock Trading with Reinforcement Learning",
+      image: "Screenshot 2025-11-07 234304.png",
+      popupLines: [
+        "Winter in Data Science",
+        "Analytics Club, IIT Bombay"
+      ]
+    },
+    project3: {
+      title: "AI-based Recommendation System",
+      popupHeading: "AI-based Recommendation System",
+      image: "Screenshot 2025-11-07 235644.png",
+      popupLines: [
+        "Winter in Data Science",
+        "Analytics Club, IIT Bombay"
+      ]
+    }
+  },
+
+  positions: {
+    position1: {
+      title: "Teaching Assistant - CS101",
+      popupHeading: "Teaching Assistant - CS101",
+      image: "Screenshot 2025-10-11 150344.png",
+      popupLines: [
+        "Course Instructors - Prof. Mythili Vutukuru, Prof. Suyash Awate",
+        "Department of Computer Science and Engineering",
+        "IIT Bombay"
+      ]
+    },
+    position2: {
+      title: "Coordinator, Abhyuday",
+      popupHeading: "Coordinator, Abhyuday",
+      image: "Abhyuday.png",
+      popupLines: [
+        "IIT Bombay's student-led social impact body",
+      ]
+    }
+  },
+
+  experience: {
+    experience1: {
+      title: "IQVIA (India) Pvt. Ltd.",
+      popupHeading: "IQVIA (India) Pvt. Ltd.",
+      image: "Screenshot 2025-10-11 005117.png",
+      popupLines: [
+        "Analyst",
+        "Data, tech and AI",
+        "India Management Consulting Team"
+      ]
+    }
+  },
+
+  publications: {
+    publication1: { title: "Spatiotemporal deep learning models for detection of rapid intensification in cyclones", paper: "https://www.arxiv.org/abs/2506.08397", image: "Screenshot 2025-10-11 003517.png" },
+    publication2: { title: "Learning-Based Vision Systems for Semi-Autonomous Forklift Operation", paper: "#", image: "forklift.png" },
+    publication3: { title: "Delhi air quality prediction using LSTM", paper: "#", image: "Screenshot 2025-10-11 004010.png" },
+    publication4: { title: "Parkinson’s Disease Detection Using ComParE Features", paper: "#", image: "PD.png" }
+  },
+
+  conferences: {
+    conference1: { title: "Evaluating Semantic Segmentation-Based Scene Descriptions for Rural Highway Point Clouds", paper: "https://github.com/VamshikaSutar/Reports-and-Presentations/blob/main/IRF%20Conference.pdf", image: "IRF.png" },
+    conference2: { title: "Intelligent Roadway Analysis: Automated Object Identification and Scene Description Retrieval for Highway Features", paper: "https://github.com/VamshikaSutar/Reports-and-Presentations/blob/main/University%20of%20Alberta%20International%20Symposium%20Poster.pdf", image: "Screenshot 2025-10-11 005253.png" }
+  }
+};
+</script>
+
+<!-- HOME -->
+<div id="home" class="section active page">
+  <div style="text-align:center;margin-bottom:8px">
+    <h2 style="margin:0 0 6px 0"></h2>
+    <p class="meta">Exploring research at the intersection of Engineering and Artificial Intelligence</p>
+  </div>
+
+  <div class="container">
+    <div class="card" tabindex="0" onclick="showSection('publications')"><img src="Screenshot 2025-10-11 002030.png" alt=""><h3>Publications</h3></div>
+    <div class="card" tabindex="0" onclick="showSection('conferences')"><img src="Conferences and Symposia.jpg" alt=""><h3>Conferences & Symposiums</h3></div>
+    <div class="card" tabindex="0" onclick="showSection('researchList')"><img src="Screenshot 2025-10-11 002030.png" alt=""><h3>Research Experience</h3></div>
+    <div class="card" tabindex="0" onclick="showSection('projects')"><img src="Technical Projects.jpg" alt=""><h3>Technical Projects</h3></div>
+    <div class="card" tabindex="0" onclick="showSection('positions')"><img src="Screenshot 2025-10-11 150318.png" alt=""><h3>Position of Responsibility</h3></div>
+    <div class="card" tabindex="0" onclick="showSection('experience')"><img src="Screenshot 2025-10-11 005117.png" alt=""><h3>Professional Experience</h3></div>
+  </div>
+</div>
+
+<!-- PUBLICATIONS -->
+<div id="publications" class="section page">
+  <a class="back-button" onclick="showSection('home')">← Home</a>
+  <h2>Publications</h2>
+  <div class="container" id="publications-container"></div>
+</div>
+
+<!-- CONFERENCES -->
+<div id="conferences" class="section page">
+  <a class="back-button" onclick="showSection('home')">← Home</a>
+  <h2>Conferences & Symposiums</h2>
+  <div class="container" id="conferences-container"></div>
+</div>
+
+<!-- RESEARCH -->
+<div id="researchList" class="section page">
+  <a class="back-button" onclick="showSection('home')">← Home</a>
+  <h2>Research Experience</h2>
+  <div class="container" id="research-container"></div>
+</div>
+
+<!-- PROJECTS -->
+<div id="projects" class="section page">
+  <a class="back-button" onclick="showSection('home')">← Home</a>
+  <h2>Technical Projects</h2>
+  <div class="container" id="projects-container"></div>
+</div>
+
+<!-- POSITIONS -->
+<div id="positions" class="section page">
+  <a class="back-button" onclick="showSection('home')">← Home</a>
+  <h2>Position of Responsibility</h2>
+  <div class="container" id="positions-container"></div>
+</div>
+
+<!-- EXPERIENCE -->
+<div id="experience" class="section page">
+  <a class="back-button" onclick="showSection('home')">← Home</a>
+  <h2>Professional Experience</h2>
+  <div class="container" id="experience-container"></div>
+</div>
+
+<!-- Popup (read-only) -->
+<div id="popupBackdrop" class="popup-backdrop" aria-hidden="true">
+  <div class="popup" role="dialog" aria-modal="true" aria-labelledby="popupHeading">
+    <div class="heading-big" id="popupHeading">Heading</div>
+    <div class="popup-row">
+      <div class="popup-bar" aria-hidden="true"></div>
+      <div style="flex:1">
+        <div class="muted" id="popupContext"></div>
+        <ul id="popupLines" class="popup-lines"></ul>
+        <div id="popupExtraLink" style="margin-top:8px"></div>
+      </div>
+    </div>
+    <div class="popup-actions" style="margin-top:12px">
+      <button class="btn ghost" onclick="closePopup()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* render functions */
+function renderPublications(){
+  const c = document.getElementById('publications-container'); c.innerHTML='';
+  Object.keys(DATA.publications || {}).forEach(k=>{
+    const it = DATA.publications[k];
+    const card = document.createElement('div'); card.className='card'; card.tabIndex=0;
+    const paperUrl = it.paper && it.paper !== '#' ? it.paper : '';
+    const img = it.image ? escapeHtml(it.image) : 'images/publications.png';
+    card.innerHTML = `<img src="${img}" alt="${escapeHtml(it.title)}"><h3>${escapeHtml(it.title)}</h3>
+      ${paperUrl ? `<a class="paper-link" href="${escapeHtml(paperUrl)}" target="_blank" rel="noopener">Paper</a>` : `<a class="paper-link" href="#" onclick="alert('No manuscript URL set. Edit DATA.publications.${k}.paper')">Paper</a>`}`;
+    card.addEventListener('click', ()=>{
+      if(paperUrl) window.open(paperUrl,'_blank','noopener');
+      else alert('No manuscript URL set. Edit DATA.publications.'+k+'.paper in the source.');
+    });
+    c.appendChild(card);
+  });
+}
+
+function renderConferences(){
+  const c = document.getElementById('conferences-container'); c.innerHTML='';
+  Object.keys(DATA.conferences || {}).forEach(k=>{
+    const it = DATA.conferences[k];
+    const card = document.createElement('div'); card.className='card'; card.tabIndex=0;
+    const paperUrl = it.paper && it.paper !== '#' ? it.paper : '';
+    const img = it.image ? escapeHtml(it.image) : 'images/conferences.png';
+    card.innerHTML = `<img src="${img}" alt="${escapeHtml(it.title)}"><h3>${escapeHtml(it.title)}</h3>
+      ${paperUrl ? `<a class="paper-link" href="${escapeHtml(paperUrl)}" target="_blank" rel="noopener">Paper</a>` : `<a class="paper-link" href="#" onclick="alert('No manuscript URL set. Edit DATA.conferences.${k}.paper')">Paper</a>`}`;
+    card.addEventListener('click', ()=>{
+      if(paperUrl) window.open(paperUrl,'_blank','noopener');
+      else alert('No manuscript URL set. Edit DATA.conferences.'+k+'.paper in the source.');
+    });
+    c.appendChild(card);
+  });
+}
+
+function renderResearch(){
+  const c = document.getElementById('research-container'); c.innerHTML='';
+  Object.keys(DATA.research || {}).forEach(k=>{
+    const it = DATA.research[k];
+    const card = document.createElement('div'); card.className='card'; card.tabIndex=0;
+    const img = it.image ? escapeHtml(it.image) : 'images/research1.png';
+    card.innerHTML = `<img src="${img}" alt="${escapeHtml(it.title)}"><h3>${escapeHtml(it.title)}</h3>`;
+    card.addEventListener('click', ()=>openPopup(it.popupHeading || it.title, 'Research', it.popupLines || [], null));
+    c.appendChild(card);
+  });
+}
+
+function renderProjects(){
+  const c = document.getElementById('projects-container'); c.innerHTML='';
+  Object.keys(DATA.projects || {}).forEach(k=>{
+    const it = DATA.projects[k];
+    const card = document.createElement('div'); card.className='card'; card.tabIndex=0;
+    const img = it.image ? escapeHtml(it.image) : 'images/project1.png';
+    card.innerHTML = `<img src="${img}" alt="${escapeHtml(it.title)}"><h3>${escapeHtml(it.title)}</h3>`;
+    card.addEventListener('click', ()=>openPopup(it.popupHeading || it.title, 'Project', it.popupLines || [], it.detailLink || null));
+    c.appendChild(card);
+  });
+}
+
+function renderPositions(){
+  const c = document.getElementById('positions-container'); c.innerHTML='';
+  Object.keys(DATA.positions || {}).forEach(k=>{
+    const it = DATA.positions[k];
+    const card = document.createElement('div'); card.className='card'; card.tabIndex=0;
+    const img = it.image ? escapeHtml(it.image) : 'images/position1.png';
+    card.innerHTML = `<img src="${img}" alt="${escapeHtml(it.title)}"><h3>${escapeHtml(it.title)}</h3>`;
+    card.addEventListener('click', ()=>openPopup(it.popupHeading || it.title, 'Position', it.popupLines || [], it.detailLink || null));
+    c.appendChild(card);
+  });
+}
+
+function renderExperience(){
+  const c = document.getElementById('experience-container'); c.innerHTML='';
+  Object.keys(DATA.experience || {}).forEach(k=>{
+    const it = DATA.experience[k];
+    const card = document.createElement('div'); card.className='card'; card.tabIndex=0;
+    const img = it.image ? escapeHtml(it.image) : 'images/professional.png';
+    card.innerHTML = `<img src="${img}" alt="${escapeHtml(it.title)}"><h3>${escapeHtml(it.title)}</h3>`;
+    card.addEventListener('click', ()=>openPopup(it.popupHeading || it.title, 'Professional Experience', it.popupLines || [], it.detailLink || null));
+    c.appendChild(card);
+  });
+}
+
+/* popup control */
+const popupBackdrop = document.getElementById('popupBackdrop');
+const popupHeading = document.getElementById('popupHeading');
+const popupContext = document.getElementById('popupContext');
+const popupLines = document.getElementById('popupLines');
+const popupExtraLink = document.getElementById('popupExtraLink');
+
+function openPopup(bigHeading, contextLabel, linesArray, optionalLink){
+  popupHeading.textContent = bigHeading || '';
+  popupContext.textContent = contextLabel || '';
+  popupLines.innerHTML = '';
+  if(!linesArray || !linesArray.length){
+    popupLines.innerHTML = '<li style="color:var(--muted)">No content provided. Edit DATA in the source to add popupLines.</li>';
+  } else {
+    linesArray.forEach(line => {
+      const li = document.createElement('li');
+      li.innerHTML = escapeHtml(line);
+      popupLines.appendChild(li);
+    });
+  }
+  if(optionalLink){
+    popupExtraLink.innerHTML = `<a class="paper-link" href="${escapeHtml(optionalLink)}" target="_blank" rel="noopener">Open link</a>`;
+  } else popupExtraLink.innerHTML = '';
+  popupBackdrop.style.display = 'flex';
+  popupBackdrop.setAttribute('aria-hidden','false');
+}
+
+function closePopup(){
+  popupBackdrop.style.display = 'none';
+  popupBackdrop.setAttribute('aria-hidden','true');
+}
+
+/* clicking outside or Esc closes popup */
+popupBackdrop.addEventListener('click', e => { if(e.target === popupBackdrop) closePopup(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && popupBackdrop.style.display === 'flex') closePopup(); });
+
+/* section switching */
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>{ s.style.display = 'none'; s.classList.remove('active'); });
+  const el = document.getElementById(id);
+  if(el){ el.style.display = 'block'; el.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); }
+  else { document.getElementById('home').style.display='block'; document.getElementById('home').classList.add('active'); }
+}
+
+/* init */
+(function init(){
+  renderPublications();
+  renderConferences();
+  renderResearch();
+  renderProjects();
+  renderPositions();
+  renderExperience();
+  // ensure sections hidden except home
+  document.querySelectorAll('.section').forEach(s=>{ if(!s.classList.contains('active')) s.style.display='none'; });
+})();
+</script>
+</body>
+</html>
